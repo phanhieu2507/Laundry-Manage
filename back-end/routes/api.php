@@ -32,5 +32,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::apiResource('promo-codes', PromoCodeController::class);
-Route::post('apply-promo-code', [PromoCodeController::class, 'apply']);
+Route::post('/promo-codes/apply', [PromoCodeController::class, 'apply']);
 

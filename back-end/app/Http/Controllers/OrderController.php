@@ -85,9 +85,15 @@ class OrderController extends Controller
 
     protected function calculateDiscount(PromoCode $promoCode, $totalAmount)
     {
-        return $promoCode->discount_type == 'percentage' ?
-               ($totalAmount * $promoCode->discount_value / 100) :
-               min($promoCode->discount_value, $totalAmount);
+        $discountValue = floatval($promoCode->discount_value);
+
+    if ($promoCode->discount_type == 'percentage') {
+        // Tính toán giảm giá dựa trên phần trăm
+        return ($totalAmount * $discountValue) / 100;
+    }
+
+    // Tính toán giảm giá dựa trên giá trị cố định
+    return min($discountValue, $totalAmount);
     }
 
     public function update(Request $request, $id)

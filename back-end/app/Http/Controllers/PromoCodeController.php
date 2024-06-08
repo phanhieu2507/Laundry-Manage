@@ -39,11 +39,16 @@ class PromoCodeController extends Controller
                               ->where('valid_until', '>=', now())
                               ->first();
         
-        if (!$promoCode || ($promoCode->usage_limit && $promoCode->times_used >= $promoCode->usage_limit)) {
-            return response()->json(['message' => 'This promo code is not valid.'], 400);
+        if (!$promoCode) {
+            return response()->json(['message' => 'Promo code is invalid or expired.'], 404);
         }
-
+    
+        if ($promoCode->usage_limit && $promoCode->times_used >= $promoCode->usage_limit) {
+            return response()->json(['message' => 'This promo code has reached its usage limit.'], 410);
+        }
+    
         $promoCode->increment('times_used');
         return response()->json(['discount_type' => $promoCode->discount_type, 'discount_value' => $promoCode->discount_value]);
     }
+    
 }

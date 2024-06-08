@@ -94,10 +94,10 @@ const RequestForm = () => {
 
       <Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" className="mr-2 bg-blue-500 hover:bg-blue-300">
+        <Button type="primary" htmlType="submit" className="mr-2 bg-blue-500 hover:bg-blue-600 w-24 rounded-lg text-white">
           Submit Request
         </Button>
-        <Button type="default" onClick={handleCancel}>
+        <Button type="default" className="mr-2 bg-yellow-500 hover:bg-yellow-600 w-24 rounded-lg text-white" onClick={handleCancel}>
           Cancel
         </Button>
       </Form.Item>
@@ -108,7 +108,7 @@ const RequestForm = () => {
       visible={isModalVisible}
       onOk={handleOk}
       onCancel={() => setIsModalVisible(false)}
-      okButtonProps={{ className: "bg-blue-500 hover:bg-blue-400" }}
+      okButtonProps={{ className: "bg-blue-500 hover:bg-blue-600" }}
     >
       <p>Your request has been successfully submitted.</p>
       <p>Your order ID is: {orderId}</p>

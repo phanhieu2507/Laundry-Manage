@@ -25,10 +25,11 @@ const AdminEditOrder = () => {
         const fetchedData = {
           ...orderDetailsResponse.data,
           phone: orderDetailsResponse.data.user.phone,
-          order_date: moment(orderDetailsResponse.data.order_date), // Using moment object directly for DatePicker
-          service: orderDetailsResponse.data.service.split(", ")
+          order_date: moment(orderDetailsResponse.data.order_date),
+          service: orderDetailsResponse.data.service.split(", "),
+          promo_code: orderDetailsResponse.data.promo_code || ''  // Assuming there is a promo_code field in the response
         };
-        form.setFieldsValue(fetchedData); // Set form values directly when data is fetched
+        form.setFieldsValue(fetchedData);
       } catch (error) {
         console.error("Error fetching data:", error);
         notification.error({
@@ -46,12 +47,13 @@ const AdminEditOrder = () => {
       await axios.put(`/orders/${orderId}`, {
         ...values,
         order_date: values.order_date.format("YYYY-MM-DD"),
-        service: values.service.join(", ")
+        service: values.service.join(", "),
+        promo_code: values.promo_code
       });
       notification.success({
         message: "Order Updated Successfully",
       });
-      navigate("/admin/orders"); // Redirect to order list page or dashboard after success
+      navigate("/admin/orders");
     } catch (error) {
       console.error("Error updating order:", error);
       notification.error({
@@ -92,7 +94,10 @@ const AdminEditOrder = () => {
           <Form.Item label="Detail" name="detail">
             <Input.TextArea />
           </Form.Item>
-          <Button type="primary" htmlType="submit" className="w-full">
+          <Form.Item label="Promo Code" name="promo_code">
+            <Input />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-24 ">
             Update Order
           </Button>
         </Form>

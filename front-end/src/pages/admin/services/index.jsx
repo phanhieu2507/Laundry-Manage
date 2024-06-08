@@ -1,7 +1,4 @@
-// src/components/ServiceList.jsx
-
 import React, { useState, useEffect } from "react";
-import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   Card,
   Button,
@@ -12,8 +9,11 @@ import {
   Checkbox,
   Pagination,
 } from "antd";
-import axios from "../../../component/api/axios.js";
-import AdminNavbar from "../../../component/navbar/admin-nav.jsx";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import axios from "../../../component/api/axios";
+import AdminNavbar from "../../../component/navbar/admin-nav";
+import AdminSidebar from "../../../component/sidebar/admin-side";
+
 const AdminService = () => {
   const [services, setServices] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -79,58 +79,84 @@ const AdminService = () => {
   return (
     <div>
       <AdminNavbar />
-      <div className="pt-8">
-      <div class="text-3xl font-bold text-center mt-8 mb-8 text-gray-800">
-        My Laundry's Service
+      <div className="flex">
+        <AdminSidebar />
+        <div className="flex-grow ml-64 p-4">
+          <div className="pt-8">
+            <div className="text-2xl font-semibold text-left mt-8 mb-8 text-gray-800">
+              My Laundry's Service
+            </div>
+
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+              className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-32"
+            >
+              Add Service
+            </Button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-12 shadow-lg border rounded-2xl px-24 m-2">
+              {currentServices.map((service) => (
+                <Card
+                  key={service.service_id}
+                  title={service.service_name}
+                  className="flex flex-col justify-between border-indigo-300 rounded-xl h-full"
+                >
+                  <div className="overflow-y-auto p-4">
+                    <p>
+                      <strong>Service ID:</strong> {service.service_id}
+                    </p>
+                    <p>
+                      <strong>Duration:</strong> {service.duration} minutes
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {service.description}
+                    </p>
+                    <p>
+                      <strong>Is Available:</strong>{" "}
+                      {service.is_available ? "Yes" : "No"}
+                    </p>
+                    <p>
+                      <strong>Price Per Unit:</strong> $
+                      {service.price_per_unit || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Unit Type:</strong> {service.unit_type || "N/A"}
+                    </p>
+                  </div>
+                  <div className="flex justify-end items-center p-4 space-x-2">
+                    <Button
+                      type="primary"
+                      onClick={() => handleEdit(service)}
+                      icon={<EditOutlined />}
+                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-24"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      type="danger"
+                      onClick={() => handleDelete(service.service_id)}
+                      icon={<DeleteOutlined />}
+                      className="bg-red-500 hover:bg-red-600 text-white rounded-lg w-24"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <Pagination
+              current={currentPage}
+              onChange={(page) => setCurrentPage(page)}
+              pageSize={servicesPerPage}
+              total={services.length}
+              className="mt-8"
+            />
+          </div>
+        </div>
       </div>
-
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={handleAdd}
-        className="mb-4 bg-blue-500 hover:bg-blue-300"
-      >
-        Add Service
-      </Button>
-
-      <div className="h-full min-h-[670px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-12 shadow-lg border rounded-2xl px-24 m-2">
-        {currentServices.map((service) => (
-          <Card
-            key={service.service_id}
-            title={service.service_name}
-            className="border-2 border-indigo-300 rounded-3xl h-full max-h-[290px]"
-            actions={[
-              <EditOutlined key="edit" onClick={() => handleEdit(service)} />,
-              <DeleteOutlined
-                key="delete"
-                onClick={() => handleDelete(service.service_id)}
-              />,
-            ]}
-          >
-            <p>
-              <strong>Service ID:</strong> {service.service_id}
-            </p>
-            <p>
-              <strong>Duration:</strong> {service.duration} minutes
-            </p>
-            <p>
-              <strong>Description:</strong> {service.description}
-            </p>
-            <p>
-              <strong>Is Available:</strong>{" "}
-              {service.is_available ? "Yes" : "No"}
-            </p>
-            <p>
-              <strong>Price Per Unit:</strong> $
-              {service.price_per_unit || "N/A"}
-            </p>
-            <p>
-              <strong>Unit Type:</strong> {service.unit_type || "N/A"}
-            </p>
-          </Card>
-        ))}
-      </div>
-
       <Modal
         title="Add Service"
         visible={visible}
@@ -191,14 +217,6 @@ const AdminService = () => {
           </Form.Item>
         </Form>
       </Modal>
-      <Pagination
-        current={currentPage}
-        onChange={(page) => setCurrentPage(page)}
-        pageSize={servicesPerPage}
-        total={services.length}
-        className="mt-8" // Thêm một chút margin-top để tạo khoảng cách
-      />
-      </div>
     </div>
   );
 };

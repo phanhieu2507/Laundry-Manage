@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../component/api/axios";
 import AdminNavbar from "../../../component/navbar/admin-nav";
+import AdminSidebar from "../../../component/sidebar/admin-side";
 import { Table, Button, Popconfirm, Typography, Input } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -50,7 +51,7 @@ const AdminUserList = () => {
       key: "actions",
       render: (text, record) => (
         <div className="flex items-center space-x-2">
-          <Button icon={<EditOutlined />} onClick={() => console.log("Edit user", record.id)} className="mr-2">
+          <Button icon={<EditOutlined />} onClick={() => console.log("Edit user", record.id)} className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-24">
             Edit
           </Button>
           <Popconfirm
@@ -59,7 +60,7 @@ const AdminUserList = () => {
             okText="Yes"
             cancelText="No"
           >
-            <Button icon={<DeleteOutlined />} danger>
+            <Button icon={<DeleteOutlined />} className="bg-red-500 hover:bg-red-600 text-white rounded-lg w-24">
               Delete
             </Button>
           </Popconfirm>
@@ -71,8 +72,10 @@ const AdminUserList = () => {
   return (
     <div>
       <AdminNavbar />
-      <div className="max-w-screen-xl mx-auto p-4 pt-12">
-        <Title level={2} className="text-center my-6">
+      <div className="flex">
+        <AdminSidebar/>
+      <div className="max-w-screen-xl mx-auto p-4 pt-12 ml-96">
+        <Title level={2} className="text-left text-2xl font-semibold my-6">
           User List
         </Title>
         <Input.Search
@@ -82,6 +85,7 @@ const AdminUserList = () => {
           className="mb-4 bg-blue-500 rounded-lg"
         />
         <Table dataSource={filteredUsers} columns={columns} rowKey="id" />
+      </div>
       </div>
     </div>
   );

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Popconfirm, Modal, Form, Input, DatePicker, Select, notification } from 'antd';
 import axios from "../../../component/api/axios"; // Đường dẫn tùy thuộc vào cấu hình của bạn
+import AdminNavbar from "../../../component/navbar/admin-nav";
+import AdminSidebar from "../../../component/sidebar/admin-side";
 import moment from 'moment';
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 
 const { RangePicker } = DatePicker;
@@ -85,9 +88,9 @@ const PromoCodeList = () => {
         {
             title: 'Actions', key: 'actions', render: (_, record) => (
                 <div className="flex items-center space-x-2">
-                    <Button onClick={() => handleEdit(record)} type="primary">Edit</Button>
+                    <Button icon={<EditOutlined />} className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-24" onClick={() => handleEdit(record)} type="primary">Edit</Button>
                     <Popconfirm title="Are you sure to delete this promo code?" onConfirm={() => handleDelete(record.id)}>
-                        <Button type="danger">Delete</Button>
+                        <Button icon={<DeleteOutlined />}className="bg-red-500 hover:bg-red-600 text-white rounded-lg w-24" type="danger" >Delete</Button>
                     </Popconfirm>
                 </div>
             )
@@ -96,40 +99,49 @@ const PromoCodeList = () => {
 
     return (
         <div>
-            <Button type="primary" onClick={handleAdd}>Add Promo Code</Button>
-            <Table columns={columns} dataSource={promoCodes} rowKey="id" />
-            <Modal title={`${currentPromoCode ? 'Edit' : 'Add'} Promo Code`} visible={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
-                <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item name="code" label="Code" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="description" label="Description">
-                        <Input.TextArea />
-                    </Form.Item>
-                    <Form.Item name="discount_type" label="Discount Type" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="fixed">Fixed</Option>
-                            <Option value="percentage">Percentage</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="discount_value" label="Discount Value" rules={[{ required: true }]}>
-                        <Input type="number" />
-                    </Form.Item>
-                    <Form.Item name="valid_range" label="Valid Range" rules={[{ required: true }]}>
-                        <RangePicker />
-                    </Form.Item>
-                    <Form.Item name="status" label="Status" rules={[{ required: true }]}>
-                        <Select>
-                            <Option value="active">Active</Option>
-                            <Option value="inactive">Inactive</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="usage_limit" label="Usage Limit">
-                        <Input type="number" />
-                    </Form.Item>
-                    <Button type="primary" htmlType="submit">Submit</Button>
-                </Form>
-            </Modal>
+            <AdminNavbar />
+            <div className="flex">
+                <AdminSidebar />
+                <div className="flex-grow ml-64 mt-24">
+                <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+              Promo Codes
+            </h2>
+                    <Button type="primary" className="bg-green-500 hover:bg-green-600 mb-4 rounded-lg text-white" onClick={handleAdd}>Add Promo Code</Button>
+                    <Table columns={columns} dataSource={promoCodes} rowKey="id" />
+                    <Modal title={`${currentPromoCode ? 'Edit' : 'Add'} Promo Code`} visible={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
+                        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                            <Form.Item name="code" label="Code" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item name="description" label="Description">
+                                <Input.TextArea />
+                            </Form.Item>
+                            <Form.Item name="discount_type" label="Discount Type" rules={[{ required: true }]}>
+                                <Select>
+                                    <Option value="fixed">Fixed</Option>
+                                    <Option value="percentage">Percentage</Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item name="discount_value" label="Discount Value" rules={[{ required: true }]}>
+                                <Input type="number" />
+                            </Form.Item>
+                            <Form.Item name="valid_range" label="Valid Range" rules={[{ required: true }]}>
+                                <RangePicker />
+                            </Form.Item>
+                            <Form.Item name="status" label="Status" rules={[{ required: true }]}>
+                                <Select>
+                                    <Option value="active">Active</Option>
+                                    <Option value="inactive">Inactive</Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item name="usage_limit" label="Usage Limit">
+                                <Input type="number" />
+                            </Form.Item>
+                            <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-24" type="primary"  htmlType="submit">Submit</Button>
+                        </Form>
+                    </Modal>
+                </div>
+            </div>
         </div>
     );
 };
