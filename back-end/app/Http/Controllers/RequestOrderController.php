@@ -5,14 +5,52 @@ namespace App\Http\Controllers;
 use App\Models\RequestOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 class RequestOrderController extends Controller
 {
-    public function index()
-    {
-        // Lấy tất cả request orders
-        $requestOrders = RequestOrder::all();
+    public function index(Request $request) {
+        $query = RequestOrder::query();
+    
+        // Logging incoming request parameters
+        Log::emergency('Received request with parameters:', $request->all());
+    
+        // Filtering by today
+        if ($request->time_filter === 'today') {
+            $query->whereDate('created_at', '=', now()->toDateString());
+            Log::emergency('Filtering by today', ['date' => now()->toDateString()]);
+        }
+    
+        // Filtering by this week
+        if ($request->time_filter === 'week') {
+            $startOfWeek = now()->startOfWeek()->toDateTimeString();
+            $endOfWeek = now()->endOfWeek()->toDateTimeString();
+            $query->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+            Log::emergency('Filtering by week', ['startOfWeek' => $startOfWeek, 'endOfWeek' => $endOfWeek]);
+        }
+    
+        // Filtering by this month
+        if ($request->time_filter === 'month') {
+            $startOfMonth = now()->startOfMonth()->toDateTimeString();
+            $endOfMonth = now()->endOfMonth()->toDateTimeString();
+            $query->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+            Log::emergency('Filtering by month', ['startOfMonth' => $startOfMonth, 'endOfMonth' => $endOfMonth]);
+        }
+    
+        // Additional status filter
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+            Log::emergency('Filtering by status', ['status' => $request->status]);
+        }
+    
+        $requestOrders = $query->get();
+        Log::emergency('Fetched request orders', ['count' => count($requestOrders)]);
+    
         return response()->json($requestOrders);
     }
+    
+    
+    
 
     public function show($id)
     {

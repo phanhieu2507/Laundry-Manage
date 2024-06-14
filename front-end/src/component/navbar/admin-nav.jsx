@@ -3,6 +3,7 @@ import { Layout, Menu, Dropdown } from 'antd';
 import { UserOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { notification } from 'antd';
+import NotificationBell from '../notibell'; // Đảm bảo đường dẫn đúng
 
 const { Header } = Layout;
 
@@ -33,9 +34,11 @@ const AdminNavbar = () => {
 
   return (
     <Header className="bg-white fixed top-0 left-0 right-0 z-10 shadow-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between w-full px-4">
         <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
           <div className="cursor-pointer flex items-center ml-auto">
+            {/* Đặt NotificationBell trước icon UserOutlined */}
+            <NotificationBell />
             <div className="text-gray-900 mr-2">
               <UserOutlined />
             </div>

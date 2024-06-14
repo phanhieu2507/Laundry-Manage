@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\OrderController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\RequestOrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromoCodeController;
+use App\Http\Controllers\NotificationController;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,4 +36,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::apiResource('promo-codes', PromoCodeController::class);
 Route::post('/promo-codes/apply', [PromoCodeController::class, 'apply']);
+Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
 
