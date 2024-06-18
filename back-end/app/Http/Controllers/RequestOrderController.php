@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\RequestOrder;
+use App\Models\Notification;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -102,12 +104,21 @@ class RequestOrderController extends Controller
         if (!$request) {
             return response()->json(['error' => 'Request not found'], 404);
         }
-
+    
         $request->status = $status;
         $request->save();
-
+    
+        // Tạo thông báo mới
+        $notification = new Notification([
+            'user_id' => $request->user_id, // Giả sử 'user_id' là khóa ngoại trong bảng 'requests'
+            'title' => "Request Update",
+            'message' => "Your request $id has been updated to $status."
+        ]);
+        $notification->save();
+    
         return response()->json(['message' => 'Status updated successfully']);
     }
+    
 
     public function getUserRequests($id)
     {

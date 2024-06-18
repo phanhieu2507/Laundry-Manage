@@ -5,7 +5,7 @@ import AdminNavbar from "../../../component/navbar/admin-nav";
 import AdminSidebar from "../../../component/sidebar/admin-side";
 import moment from 'moment';
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-
+import { useNavigate } from 'react-router-dom';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -15,6 +15,7 @@ const PromoCodeList = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [currentPromoCode, setCurrentPromoCode] = useState(null);
     const [form] = Form.useForm();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchPromoCodes();
@@ -107,7 +108,16 @@ const PromoCodeList = () => {
               Promo Codes
             </h2>
                     <Button type="primary" className="bg-green-500 hover:bg-green-600 mb-4 rounded-lg text-white" onClick={handleAdd}>Add Promo Code</Button>
-                    <Table columns={columns} dataSource={promoCodes} rowKey="id" />
+                    <Table  columns={columns} 
+                            dataSource={promoCodes} 
+                            rowKey="id"
+                            onRow={(record) => ({
+                                onClick: () => {
+                                    console.log('Navigating to:', `/${record.id}`); // Thêm log để debug
+                                    navigate(`${record.id}`);
+                                }
+                            })}
+                            />
                     <Modal title={`${currentPromoCode ? 'Edit' : 'Add'} Promo Code`} visible={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
                         <Form form={form} layout="vertical" onFinish={handleSubmit}>
                             <Form.Item name="code" label="Code" rules={[{ required: true }]}>

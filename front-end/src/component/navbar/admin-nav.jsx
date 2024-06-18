@@ -18,7 +18,7 @@ const AdminNavbar = () => {
     });
   };
 
-  // Lấy tên người dùng từ local storage (đây là ví dụ, bạn có thể sửa lại cho phù hợp với mã của bạn)
+  // Lấy tên người dùng từ local storage
   const userName = JSON.parse(localStorage.getItem('userData')).name;
 
   const menu = (
@@ -35,17 +35,21 @@ const AdminNavbar = () => {
   return (
     <Header className="bg-white fixed top-0 left-0 right-0 z-10 shadow-sm">
       <div className="flex items-center justify-between w-full px-4">
-        <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-          <div className="cursor-pointer flex items-center ml-auto">
-            {/* Đặt NotificationBell trước icon UserOutlined */}
+        {/* NotificationBell được đặt trong một div với margin phải là 10px */}
+        <div className="ml-auto flex items-center">
+          <div className="mr-10">
             <NotificationBell />
-            <div className="text-gray-900 mr-2">
-              <UserOutlined />
-            </div>
-            <div className="text-gray-900 mr-4">{userName}</div>
-            <DownOutlined />
           </div>
-        </Dropdown>
+          <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+            <div className="cursor-pointer flex items-center">
+              <div className="text-gray-900 mr-2">
+                <UserOutlined />
+              </div>
+              <div className="text-gray-900 mr-4">{userName}</div>
+              <DownOutlined />
+            </div>
+          </Dropdown>
+        </div>
       </div>
     </Header>
   );

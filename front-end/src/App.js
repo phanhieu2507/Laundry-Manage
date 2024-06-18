@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import AdminService from "./pages/admin/services";
 import UserService from "./pages/user/services";
 import NotFound from "./pages/404/NotFound";
-import CreateRequest from "./pages/request-orders/create";
+import CreateRequest from "./pages/user/request-orders/create";
 import AdminRequestList from "./pages/admin/request-orders";
 import Login from "./pages/login";
 import Register from "./pages/register";
@@ -16,6 +16,8 @@ import AdminEditOrder from "./pages/admin/orders/edit";
 import AdminUserList from "./pages/admin/users";
 import UserProfile from "./pages/user/profile";
 import PromoCodeList from "./pages/admin/promo-codes";
+import PromoCodeDetail from "./pages/admin/promo-codes/[id]";
+import UserPromoCodes from "./pages/user/promo-codes/[id]";
 function App() {
   return (
     <div>
@@ -36,17 +38,24 @@ function App() {
           </Route>
         </Route> */}
         <Route path="admin/services" element={<AdminService />} />
-        <Route path="request-orders/create" element={<CreateRequest />} />
+        
         <Route path="admin/request-orders" element={<AdminRequestList />} />
-        <Route path="admin/promo-codes" element={<PromoCodeList />} />
+        
         <Route path="admin/orders/create" element={<AdminCreateOrder />} />
         <Route path="admin/orders" element={<AdminOrderList />} />
         <Route path="admin/users" element={<AdminUserList />} />
         <Route path="admin/orders/:orderId/edit" element={<AdminEditOrder />} />
-        <Route path="user/orders" element={<UserOrderList />} />
-      <Route path="user/request-orders" element={<UserRequestList />} />
-      <Route path="services" element={<UserService />} />
-      <Route path="user/profile" element={<UserProfile />} />
+        <Route path="admin/promo-codes" element={<PromoCodeList />} />
+        <Route path="admin/promo-codes/:id" element={<PromoCodeDetail />} />
+
+          <Route path="user/orders" element={<UserOrderList />} />
+          <Route path="user/request-orders" element={<UserRequestList />} />
+          <Route path="user/request-orders/create" element={<CreateRequest />} />
+          <Route path="user/services" element={<UserService />} />
+          <Route path="user/profile" element={<UserProfile />} />
+          <Route path="user/promo-codes/:id" element={<UserPromoCodes />} />
+
+          
       </Routes>
     </div>
   );

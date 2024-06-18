@@ -26,7 +26,7 @@ const Login = () => {
         if(response.data.user.role === 'admin') {
           navigate("/admin/services");
         } else
-          navigate("/services");
+          navigate("/user/services");
       } else {
         navigate("/login");
         notification.open({

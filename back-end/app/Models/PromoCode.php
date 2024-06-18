@@ -11,5 +11,13 @@ class PromoCode extends Model
         'code', 'description', 'discount_type', 'discount_value', 'valid_from', 
         'valid_until', 'status', 'usage_limit', 'times_used'
     ];
+
+    public function users()
+{
+    return $this->belongsToMany(User::class, 'user_promo_codes')
+                ->withPivot('times_used', 'limit')
+                ->withTimestamps();
+}
+
 }
 

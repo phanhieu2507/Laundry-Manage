@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../../component/api/axios';
+import { Form, Input, Button, Layout, notification } from 'antd';
 import UserNavbar from '../../../component/navbar/user-nav';
+import UserSidebar from '../../../component/sidebar/user-side';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
+
+const { Content } = Layout;
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    // Lấy id từ localStorage
     const storedUserData = JSON.parse(localStorage.getItem('userData'));
     const userId = storedUserData?.id;
 
     if (userId) {
-      // Gọi API để lấy thông tin người dùng dựa trên userId
       const fetchUserData = async () => {
         try {
           const response = await axios.get(`/users/${userId}`);
-          setUserData(response.data);
+          form.setFieldsValue(response.data);
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
@@ -23,34 +26,112 @@ const UserProfile = () => {
 
       fetchUserData();
     }
-  }, []);
+  }, [form]);
+
+  const onFinish = async (values) => {
+    const { oldPassword, newPassword } = values;
+    try {
+      // API call to update password
+      await axios.post('/users/change-password', {
+        userId: JSON.parse(localStorage.getItem('userData')).id,
+        oldPassword,
+        newPassword
+      });
+      form.resetFields(['oldPassword', 'newPassword', 'confirm']);
+      // Success notification
+      notification.success({
+        message: 'Password updated successfully!',
+      });
+    } catch (error) {
+      // Error handling
+      console.error('Error updating password:', error);
+      notification.error({
+        message: 'Failed to update password',
+        description: 'Your old password may be incorrect or the server could be unreachable.'
+      });
+    }
+  };
 
   return (
-    <div>
-        <UserNavbar/>
-    <div className="max-w-lg mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Your's Profile</h2>
-      {userData ? (
-        <div className="bg-white p-4 rounded-md shadow-md">
-          <p className="mb-2">
-            <span className="font-semibold">Name:</span> {userData.name}
-          </p>
-          <p className="mb-2">
-            <span className="font-semibold">Email:</span> {userData.email}
-          </p>
-          <p className="mb-2">
-            <span className="font-semibold">Address:</span> {userData.address || 'N/A'}
-          </p>
-          <p className="mb-2">
-            <span className="font-semibold">Phone:</span> {userData.phone || 'N/A'}
-          </p>
-          {/* Thêm các trường khác của thông tin cá nhân */}
+    <Layout className="min-h-screen bg-gray-100">
+      <UserNavbar />
+      <UserSidebar />
+      <Content className="p-8">
+        <div className="max-w-4xl mx-auto bg-white p-6 mt-16 rounded-lg shadow">
+          <h2 className="text-3xl font-bold text-center mb-6">Your Profile</h2>
+          <Form form={form} onFinish={onFinish} layout="vertical">
+            {/* Existing fields */}
+            <Form.Item
+              name="name"
+              label="Full Name"
+              rules={[{ required: true, message: 'Please input your full name!' }]}
+            >
+              <Input prefix={<UserOutlined className="site-form-item-icon" />} />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[{ type: 'email', message: 'The input is not valid E-mail!' }]}
+            >
+              <Input prefix={<MailOutlined className="site-form-item-icon" />} disabled />
+            </Form.Item>
+            <Form.Item
+              name="address"
+              label="Address"
+            >
+              <Input prefix={<HomeOutlined className="site-form-item-icon" />} />
+            </Form.Item>
+            <Form.Item
+              name="phone"
+              label="Phone"
+            >
+              <Input prefix={<PhoneOutlined className="site-form-item-icon" />} />
+            </Form.Item>
+
+            {/* New password fields */}
+            <Form.Item
+              name="oldPassword"
+              label="Old Password"
+              rules={[{ required: true, message: 'Please input your old password!' }]}
+            >
+              <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} />
+            </Form.Item>
+            <Form.Item
+              name="newPassword"
+              label="New Password"
+              rules={[{ required: true, message: 'Please enter a new password!' }]}
+            >
+              <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} />
+            </Form.Item>
+            <Form.Item
+              name="confirm"
+              label="Confirm New Password"
+              dependencies={['newPassword']}
+              hasFeedback
+              rules={[
+                { required: true, message: 'Please confirm your new password!' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('newPassword') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="w-full">
+                Update Profile
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
-      ) : (
-        <p>Loading user data...</p>
-      )}
-    </div>
-    </div>
+      </Content>
+    </Layout>
   );
 };
 

@@ -1,55 +1,53 @@
-import { Layout, Menu, notification } from 'antd';
-import { UserOutlined, FormOutlined, CommentOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import React from 'react';
+import { Layout, Menu, Dropdown, notification } from 'antd';
+import { UserOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../notibell'; // Đảm bảo đường dẫn đúng
 
 const { Header } = Layout;
 
 const UserNavbar = () => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   const handleLogout = () => {
+    // Xóa thông tin người dùng khỏi localStorage khi đăng xuất
+    localStorage.removeItem('userData');
     navigate('/login');
     notification.success({
-      message: "Bạn đã Log out",
+      message: "Bạn đã đăng xuất",
     });
   };
 
-  const getKeyFromPathname = (pathname) => {
-    if (pathname.includes('/services')) {
-      return '1';
-    } else if (pathname.includes('/orders')) {
-      return '2';
-    } else if (pathname.includes('/request-orders')) {
-      return '3';
-    } else if (pathname.includes('/profile')) {
-      return '4';
-    }
-    return '1';
-  };
+  // Lấy tên người dùng từ localStorage, nếu không có giá trị mặc định là 'Guest'
+  const userName = JSON.parse(localStorage.getItem('userData'))?.name || 'Guest';
 
-  const selectedKey = getKeyFromPathname(pathname);
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile" icon={<UserOutlined />}>
+        Profile
+      </Menu.Item>
+      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
-    <Header className="bg-gray-800 text-gray-300 fixed top-0 left-0 right-0 z-10 shadow-sm">
-      <Menu theme="dark" mode="horizontal" selectedKeys={[selectedKey]} className="flex">
-        <Menu.Item key="1" icon={<UserOutlined />}>
-          <Link to="/services">Services</Link>
-        </Menu.Item>
-        <Menu.Item key="2" icon={<FormOutlined />}>
-          <Link to={`/user/orders`}>Orders</Link>
-        </Menu.Item>
-        <Menu.Item key="3" icon={<CommentOutlined />}>
-          <Link to={`/user/request-orders`}>Request Orders</Link>
-        </Menu.Item>
-        <Menu.Item key="4" icon={<UserOutlined />}>
-          <Link to={`/user/profile`}>Profile</Link>
-        </Menu.Item>
-        <Menu.Item key="5" icon={<LogoutOutlined />} onClick={handleLogout}>
-          Log Out
-        </Menu.Item>
-      </Menu>
+    <Header className="bg-white fixed top-0 left-0 right-0 z-10 shadow-sm">
+      <div className="flex items-center justify-end pr-4">
+        <NotificationBell />
+        <div className="ml-10">
+          <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+            <div className="cursor-pointer flex items-center">
+              <div className="text-gray-900 mr-2">
+                <UserOutlined style={{ color: 'rgba(0, 0, 0, 0.85)' }} />
+              </div>
+              <div className="text-gray-900 mr-4" style={{ color: 'rgba(0, 0, 0, 0.85)' }}>{userName}</div>
+              <DownOutlined style={{ color: 'rgba(0, 0, 0, 0.85)' }} />
+            </div>
+          </Dropdown>
+        </div>
+      </div>
     </Header>
   );
 };

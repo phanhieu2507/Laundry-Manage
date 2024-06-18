@@ -13,8 +13,8 @@ const NotificationBell = () => {
 
   const fetchNotifications = async () => {
     try {
-        const id = JSON.parse(localStorage.getItem('userData')).user_id;
-      const { data } = await axios.get('/notifications',{ id });
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const { data } = await axios.get(`/notifications?id=${userData.id}`);
       setNotifications(data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -30,7 +30,8 @@ const NotificationBell = () => {
 
   const markAllAsRead = async () => {
     try {
-      await axios.post('/api/notifications/mark-all-as-read');
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      await axios.get(`/notifications/mark-all-as-read?id=${userData.id}`);
       fetchNotifications();
     } catch (error) {
       console.error('Error marking notifications as read:', error);
@@ -60,6 +61,7 @@ const NotificationBell = () => {
       visible={visible}
       onVisibleChange={handleVisibleChange}
       placement="bottomRight"
+      overlayStyle={{ width: 300 }} // Set the width of the popover
     >
       <Badge count={notifications.filter(noti => !noti.read_at).length}>
         <Button icon={<BellOutlined />} shape="circle" />

@@ -4,6 +4,7 @@ import UserNavbar from '../../../component/navbar/user-nav';
 import { Modal, Button, Form, Input, Popconfirm } from "antd";
 import { useNavigate } from 'react-router-dom';
 import dayjs from "dayjs";
+import UserSidebar from '../../../component/sidebar/user-side';
 const UserRequestList = () => {
   const [userRequests, setUserRequests] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -50,7 +51,9 @@ const UserRequestList = () => {
   return (
     <div>
       <UserNavbar />
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div className="flex">
+      <UserSidebar />
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 mt-6 ml-64">
         <div className="flex flex-col mt-20 mx-auto px-4 sm:px-6 lg:px-8">
   <div className="mb-4">
     <h2 className="text-2xl font-semibold text-gray-800">
@@ -60,7 +63,7 @@ const UserRequestList = () => {
   <div className="flex flex-col md:flex-row justify-between items-center gap-4">
     <Button
       type="primary"
-      onClick={() => navigate('/request-orders/create')}
+      onClick={() => navigate(`/user/request-orders/create`)}
       className="text-white bg-blue-500 hover:bg-blue-600 mb-4 md:mb-0"
     >
       Add New Request Order
@@ -150,6 +153,7 @@ const UserRequestList = () => {
         </div>
       </div>
     </div>
+   </div>
   );
 };
 

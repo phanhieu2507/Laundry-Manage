@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import axios from '../../../component/api/axios';
 import UserNavbar from '../../../component/navbar/user-nav';
+import UserSidebar from '../../../component/sidebar/user-side'; // Đảm bảo đã import UserSidebar
 
 const UserOrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -22,7 +23,7 @@ const UserOrderList = () => {
 
   const columns = [
     {
-      title: 'Order NumBer',
+      title: 'Order Number',
       dataIndex: 'order_id',
       key: 'order_id',
     },
@@ -54,11 +55,14 @@ const UserOrderList = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <UserNavbar/>
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-center mb-6 pt-8">Your Orders</h2>
-        <Table columns={columns} dataSource={orders} rowKey="order_id" />
+    <div className="flex">
+      <UserNavbar /> {/* Thêm sidebar vào bên trái */}
+      <div className="flex-grow ml-64 p-4"> {/* Đảm bảo đủ không gian cho nội dung */}
+        <UserSidebar />
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-2xl font-bold text-center mb-6 pt-8">Your Orders</h2>
+          <Table columns={columns} dataSource={orders} rowKey="order_id" />
+        </div>
       </div>
     </div>
   );

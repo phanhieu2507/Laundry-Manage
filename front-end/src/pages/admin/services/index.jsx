@@ -101,7 +101,7 @@ const AdminService = () => {
                 <Card
                   key={service.service_id}
                   title={service.service_name}
-                  className="flex flex-col justify-between border-indigo-300 rounded-xl h-full"
+                  className="flex flex-col justify-between border-indigo-300 rounded-xl h-full transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl"
                 >
                   <div className="overflow-y-auto p-4">
                     <p>

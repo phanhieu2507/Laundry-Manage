@@ -53,4 +53,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Order::class);
     }
+
+    public function promoCodes()
+{
+    return $this->belongsToMany(PromoCode::class, 'user_promo_codes')
+                ->withPivot('times_used', 'limit')
+                ->withTimestamps();
+}
+
 }

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
@@ -108,4 +110,26 @@ class UserController extends Controller
         ], 500);
     }
 }
+public function changePassword(Request $request)
+{
+    $user = User::where('id', $request->userId)->first();; // Lấy thông tin người dùng đăng nhập hiện tại
+
+    $request->validate([
+        'oldPassword' => 'required',
+        'newPassword' => 'required|string|min:8',
+    ]);
+
+    // Kiểm tra mật khẩu cũ có chính xác không
+    if (!Hash::check($request->oldPassword, $user->password)) {
+        return response()->json(['error' => 'The old password does not match our records.'], 401);
+    }
+
+    // Cập nhật mật khẩu mới
+    $user->password = Hash::make($request->newPassword);
+    $user->save();
+
+    return response()->json(['message' => 'Password updated successfully']);
+}
+
+
 }

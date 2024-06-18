@@ -13,6 +13,12 @@ class PromoCodeController extends Controller
         return response()->json($promoCodes);
     }
 
+    public function show($id)
+    {
+        $promoCode = PromoCode::find($id);
+        return response()->json($promoCode);
+    }
+
     // Tạo mã giảm giá mới
     public function store(Request $request) {
         $promoCode = PromoCode::create($request->all());

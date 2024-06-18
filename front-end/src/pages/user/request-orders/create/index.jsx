@@ -1,6 +1,6 @@
 import React from 'react';
-import RequestForm from '../../../component/request-orders/request-form';
-import UserNavbar from '../../../component/navbar/user-nav';
+import RequestForm from '../../../../component/request-orders/request-form';
+import UserNavbar from '../../../../component/navbar/user-nav';
 import { Card } from 'antd';
 
 const CreateRequest = () => {
