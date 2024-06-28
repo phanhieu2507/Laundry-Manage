@@ -11,14 +11,8 @@ class Service extends Model
     
     protected $primaryKey = 'service_id';
 
-    protected $fillable = [
-        'description',
-        'duration',
-        'is_available',
-        'price_per_unit',
-        'service_id',
-        'service_name',
-        'unit_type',
+    protected $fillable = ['service_name', 'description', 'duration', 'is_available', 'price_per_unit', 'unit_type', 'image_url'];
 
-    ];
+
+
 }

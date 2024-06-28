@@ -97,21 +97,16 @@ const PromoCodeDetail = () => {
       render: (text, record) => record.user.phone
     },
     {
-      title: 'Times Used',
-      dataIndex: 'times_used',
-      key: 'times_used'
-    },
-    {
-      title: 'Limit',
-      dataIndex: 'limit',
-      key: 'limit'
-    },
-    {
       title: 'Assigned On',
       dataIndex: 'created_at',
       key: 'created_at',
       render: (text) => new Date(text).toLocaleDateString() // Định dạng ngày tháng
-    }
+    },
+    {
+      title: 'Used',
+      dataIndex: 'is_used',
+      key: 'is_used'
+    },
   ];
 
   return (
@@ -174,9 +169,9 @@ const PromoCodeDetail = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            name="limit"
-            label="Limit"
-            rules={[{ required: true, message: "Please enter a usage limit" }]}
+            name="quantity"
+            label="Quantity"
+            rules={[{ required: true, message: "Please enter quantity" }]}
           >
             <InputNumber min={1} />
           </Form.Item>

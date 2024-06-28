@@ -11,8 +11,13 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\PromoCode;
+use App\Models\UserPromoCode;
+use App\Models\Review;
+use App\Models\Notification;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -52,16 +57,11 @@ class OrderController extends Controller
         // Tìm user dựa trên số điện thoại
         $user = User::where('phone', $request->phone)->first();
 
-        // Xử lý mã giảm giá
-        $promoCode = PromoCode::where('code', $request->promo_code)
-                              ->where('status', 'active')
-                              ->whereDate('valid_from', '<=', now())
-                              ->whereDate('valid_until', '>=', now())
-                              ->first();
-
+        $promoCode = $request->promo_code;
         $discountAmount = 0;
-        if ($promoCode && $this->validatePromoCodeUsage($promoCode)) {
-            $discountAmount = $this->calculateDiscount($promoCode, $request->total_amount);
+
+        if ($promoCode) {
+            $discountAmount = $this->calculateDiscount($request->discount_type, $request->discount, $request->total_amount);
         }
 
         $order = Order::create([
@@ -75,19 +75,37 @@ class OrderController extends Controller
             'discount_amount' => $discountAmount
         ]);
 
+        $notification = new Notification([
+            'user_id' => $user->id,
+            'title' => 'Order Successful',
+            'message' => 'Thank you for using our service. Your order has been placed successfully.'
+        ]);
+        $notification->save();
+
+        $serviceNames = explode(',', $request->service);
+$serviceNames = array_map('trim', $serviceNames); // Loại bỏ khoảng trắng thừa
+
+$services = Service::whereIn('service_name', $serviceNames)->get();
+
+foreach ($services as $service) {
+    $review = new Review([
+        'user_id' =>  $user->id,
+        'order_id' => $order->order_id,
+        'service_id' => $service->service_id,
+        'status' => 'pending',
+        'rating' => 0,
+        'review' => null,
+    ]);
+    $review->save();
+}
         return response()->json($order, 201);
     }
 
-    protected function validatePromoCodeUsage(PromoCode $promoCode)
+    protected function calculateDiscount( $discount_type, $discount, $totalAmount)
     {
-        return !$promoCode->usage_limit || $promoCode->times_used < $promoCode->usage_limit;
-    }
+        $discountValue = floatval($discount);
 
-    protected function calculateDiscount(PromoCode $promoCode, $totalAmount)
-    {
-        $discountValue = floatval($promoCode->discount_value);
-
-    if ($promoCode->discount_type == 'percentage') {
+    if ($discount_type == 'percentage') {
         // Tính toán giảm giá dựa trên phần trăm
         return ($totalAmount * $discountValue) / 100;
     }

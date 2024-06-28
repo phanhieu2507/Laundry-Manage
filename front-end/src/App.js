@@ -18,6 +18,10 @@ import UserProfile from "./pages/user/profile";
 import PromoCodeList from "./pages/admin/promo-codes";
 import PromoCodeDetail from "./pages/admin/promo-codes/[id]";
 import UserPromoCodes from "./pages/user/promo-codes/[id]";
+import UserReviews from "./pages/user/reviews/[id]";
+import ServiceDetail from "./pages/admin/services/[id]";
+import HomePage from "./pages/homepage";
+import Dashboard from "./pages/admin/dashboard";
 function App() {
   return (
     <div>
@@ -47,15 +51,17 @@ function App() {
         <Route path="admin/orders/:orderId/edit" element={<AdminEditOrder />} />
         <Route path="admin/promo-codes" element={<PromoCodeList />} />
         <Route path="admin/promo-codes/:id" element={<PromoCodeDetail />} />
-
+        <Route path="admin/services/:serviceId" element={<ServiceDetail />} />
+        <Route path="admin/dashboard" element={<Dashboard/>}/>
           <Route path="user/orders" element={<UserOrderList />} />
           <Route path="user/request-orders" element={<UserRequestList />} />
           <Route path="user/request-orders/create" element={<CreateRequest />} />
           <Route path="user/services" element={<UserService />} />
           <Route path="user/profile" element={<UserProfile />} />
           <Route path="user/promo-codes/:id" element={<UserPromoCodes />} />
+          <Route path="user/reviews/:id" element={<UserReviews />} />
 
-          
+          <Route path="homepage" element={<HomePage />} />
       </Routes>
     </div>
   );

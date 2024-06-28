@@ -38,9 +38,9 @@ const AdminCreateOrder = () => {
     fetchServiceList();
   }, []);
 
-  const checkPromoCode = async (promoCode) => {
+  const checkPromoCode = async (phone, promoCode) => {
     try {
-      const response = await axios.post('/promo-codes/apply', { code: promoCode });
+      const response = await axios.post('/promo-codes/apply', { code: promoCode, phone: phone });
       return response.data; // Return discount info if promo code is valid
     } catch (error) {
       notification.error({
@@ -54,7 +54,8 @@ const AdminCreateOrder = () => {
   // Ensure this function is called within your form submission logic
   
   const handleSubmit = async () => {
-    const promoResponse = await checkPromoCode(formData.promo_code);
+
+    const promoResponse = await checkPromoCode(formData.phone, formData.promo_code);
     if (!promoResponse) {
       return; // Stop the submission if the promo code application failed
     }

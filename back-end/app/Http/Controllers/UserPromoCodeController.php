@@ -9,7 +9,6 @@ use App\Models\PromoCode;
 use App\Models\UserPromoCode;
 use App\Models\Notification;
 
-
 class UserPromoCodeController extends Controller
 {
     public function assignToUsers(Request $request, $promoCodeId)
@@ -20,42 +19,41 @@ class UserPromoCodeController extends Controller
         }
     
         $userIds = $request->input('userIds');
-        $limit = $request->input('limit', 1); // Giá trị mặc định là 1 nếu không được cung cấp
-    
+        $quantity = $request->input('quantity', 1); // Số lượng mã giảm giá cho mỗi người dùng
+
         if (is_array($userIds) && count($userIds) > 0) {
             foreach ($userIds as $userId) {
-                // Thêm hoặc cập nhật giới hạn sử dụng cho người dùng
-                DB::table('user_promo_codes')->updateOrInsert(
-                    ['promo_code_id' => $promoCodeId, 'user_id' => $userId],
-                    ['limit' => $limit, 'created_at' => now(), 'updated_at' => now()]
-                );
-    
+                for ($i = 0; $i < $quantity; $i++) {
+                    // Thêm mã giảm giá mới cho mỗi người dùng
+                    UserPromoCode::create([
+                        'promo_code_id' => $promoCodeId,
+                        'user_id' => $userId,
+                        'is_used' => false // Khởi tạo chưa sử dụng
+                    ]);
+                }
+                
                 // Tạo thông báo cho mỗi người dùng được tặng mã
                 $notification = new Notification([
-                    'user_id' => $userId, // Chỉ định người dùng nhận thông báo
+                    'user_id' => $userId,
                     'title' => "Promo Code Gift",
-                    'message' => "You have been gifted a promo code. Check your promo code section for more details."
+                    'message' => "You have been gifted $quantity promo code(s). Check your promo code section for more details."
                 ]);
                 $notification->save();
             }
-            return response()->json(['message' => 'Promo code assigned successfully to users']);
+            return response()->json(['message' => 'Promo code(s) assigned successfully to users']);
         }
     
         return response()->json(['message' => 'No users provided'], 400);
     }
-    
 
-public function getAssignedUsers($promoCodeId)
-{
-    $assignedUsers = UserPromoCode::where('promo_code_id', $promoCodeId)
-        ->with(['user' => function ($query) {
-            $query->select('id', 'name', 'phone');
-        }])
-        ->get(['user_id', 'times_used', 'limit', 'created_at']);
+    public function getAssignedUsers($promoCodeId)
+    {
+        $assignedUsers = UserPromoCode::where('promo_code_id', $promoCodeId)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name', 'phone');
+            }])
+            ->get(['user_id', 'created_at', 'is_used']);
 
-    return response()->json($assignedUsers);
-}
-
-
-    
+        return response()->json($assignedUsers);
+    }
 }

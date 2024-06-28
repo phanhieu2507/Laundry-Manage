@@ -7,6 +7,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\UserPromoCodeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReviewImageController;
+use App\Http\Controllers\DashboardController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +46,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::apiResource('promo-codes', PromoCodeController::class);
 Route::post('/promo-codes/apply', [PromoCodeController::class, 'apply']);
+Route::get('/users/{userId}/promo-codes', [PromoCodeController::class, 'getUserPromoCodes']);
+
 
 Route::post('/promo-codes/{promoCodeId}/assign', [UserPromoCodeController::class, 'assignToUsers']);
 Route::get('promo-codes/{promoCodeId}/assigned-users', [UserPromoCodeController::class, 'getAssignedUsers']);
@@ -50,4 +55,20 @@ Route::get('promo-codes/{promoCodeId}/assigned-users', [UserPromoCodeController:
 
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+
+Route::post('/reviews', [ReviewController::class, 'storeReview']);
+Route::get('/reviews/{userId}/summary', [ReviewController::class, 'getReviewSummary']);
+Route::get('/reviews/{userId}/pending', [ReviewController::class, 'getPendingReviews']);
+Route::post('/reviews/{reviewId}/submit', [ReviewController::class, 'submitReview']);
+Route::get('/reviews/{userId}/completed', [ReviewController::class, 'getCompletedReviews']);
+Route::get('/reviews/{userId}/stats', [ReviewController::class, 'getReviewStats']);
+Route::get('/reviews/service/{serviceId}', [ReviewController::class, 'getReviewByService']);
+
+Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats']);
+Route::get('/dashboard/earning/weekly', [DashboardController::class, 'getWeeklyEarnings']);
+Route::get('/dashboard/top-users', [DashboardController::class, 'getTopUsers']);
+Route::get('/dashboard/top-services', [DashboardController::class, 'getTopServices']);
+Route::get('/dashboard/statistics/general', [DashboardController::class, 'getGeneralPromoCodeStatistics']);
+Route::get('/dashboard/statistics/detailed', [DashboardController::class, 'getDetailedPromoCodeStatistics']);
+
 

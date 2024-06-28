@@ -13,11 +13,12 @@ class PromoCode extends Model
     ];
 
     public function users()
-{
-    return $this->belongsToMany(User::class, 'user_promo_codes')
-                ->withPivot('times_used', 'limit')
-                ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(User::class, 'user_promo_codes')
+                    ->withPivot('is_used', 'created_at')
+                    ->withTimestamps();
+    }
+    
 
 }
 
