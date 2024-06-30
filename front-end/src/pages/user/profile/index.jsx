@@ -11,8 +11,8 @@ const UserProfile = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem('userData'));
-    const userId = storedUserData?.id;
+    const storedUserData = JSON.parse(sessionStorage.getItem('userData'));
+    const userId = storedUserData.user?.id;
 
     if (userId) {
       const fetchUserData = async () => {
@@ -33,7 +33,7 @@ const UserProfile = () => {
     try {
       // API call to update password
       await axios.post('/users/change-password', {
-        userId: JSON.parse(localStorage.getItem('userData')).id,
+        userId: JSON.parse(sessionStorage.getItem('userData')).user.id,
         oldPassword,
         newPassword
       });

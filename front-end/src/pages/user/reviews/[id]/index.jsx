@@ -42,9 +42,9 @@ const UserReviews = () => {
   }, []);
 
   const fetchReviewStats = async () => {
-    const user = JSON.parse(localStorage.getItem("userData"));
+    const user = JSON.parse(sessionStorage.getItem("userData"));
     try {
-      const { data } = await axios.get(`/reviews/${user.id}/stats`);
+      const { data } = await axios.get(`/reviews/${user.user.id}/stats`);
       setPendingReviews(data.pendingReviews);
       setCompletedReviews(data.completedReviews);
       setRatingsCount(data.ratingsCount);

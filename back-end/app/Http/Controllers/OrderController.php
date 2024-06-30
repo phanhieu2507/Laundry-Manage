@@ -1,11 +1,4 @@
 <?php
-
-namespace App\Http\Controllers;
-
-
-
-// app/Http/Controllers/OrderController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Order;
@@ -18,6 +11,8 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderPlaced;
 
 class OrderController extends Controller
 {
@@ -74,7 +69,18 @@ class OrderController extends Controller
             'promo_code' => $request->promo_code,
             'discount_amount' => $discountAmount
         ]);
+        if ($order) {
+    // Gửi thông báo
+    $notification = new Notification([
+        'user_id' => $user->id,
+        'title' => 'Order Successful',
+        'message' => 'Thank you for using our service. Your order has been placed successfully.'
+    ]);
+    $notification->save();
 
+    // Gửi email
+    Mail::to($user->email)->send(new OrderPlaced($order));
+}
         $notification = new Notification([
             'user_id' => $user->id,
             'title' => 'Order Successful',

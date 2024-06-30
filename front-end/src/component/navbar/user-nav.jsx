@@ -3,23 +3,42 @@ import { Layout, Menu, Dropdown, notification } from 'antd';
 import { UserOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../notibell'; // Đảm bảo đường dẫn đúng
+import axios from '../api/axios';
 
 const { Header } = Layout;
 
 const UserNavbar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Xóa thông tin người dùng khỏi localStorage khi đăng xuất
-    localStorage.removeItem('userData');
-    navigate('/login');
-    notification.success({
-      message: "Bạn đã đăng xuất",
-    });
+  const handleLogout = async () => {
+    try {
+      // Gửi yêu cầu đăng xuất đến server nếu cần
+      await axios.post('/logout');
+  
+      // Xóa thông tin người dùng và token khỏi sessionStorage
+      sessionStorage.removeItem('userData');
+  
+      // Xóa tất cả dữ liệu khác trong sessionStorage nếu cần
+      sessionStorage.clear();
+  
+      // Hiển thị thông báo
+      notification.success({
+        message: "Log Out Successfully",
+      });
+  
+      // Chuyển hướng người dùng về trang đăng nhập
+      navigate('/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      notification.error({
+        message: "Error during logout",
+        description: "Logout failed"
+      });
+    }
   };
 
-  // Lấy tên người dùng từ localStorage, nếu không có giá trị mặc định là 'Guest'
-  const userName = JSON.parse(localStorage.getItem('userData'))?.name || 'Guest';
+  // Lấy tên người dùng từ sessionStorage, nếu không có giá trị mặc định là 'Guest'
+  const userName = JSON.parse(sessionStorage.getItem('userData')).user?.name || 'Guest';
 
   const menu = (
     <Menu>
@@ -27,7 +46,7 @@ const UserNavbar = () => {
         Profile
       </Menu.Item>
       <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Đăng xuất
+        Log out
       </Menu.Item>
     </Menu>
   );

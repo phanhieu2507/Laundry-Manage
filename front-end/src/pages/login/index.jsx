@@ -1,49 +1,51 @@
-import { LockOutlined, UserOutlined, SmileOutlined, CloseOutlined } from "@ant-design/icons";
-import { Button, Form, Input, notification, Typography } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
+import { Form, Input, Button, notification, Typography } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "../../component/api/axios";
 
 const Login = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const user = sessionStorage.getItem('userData');
+    if (user) {
+      const userData = JSON.parse(user);
+      redirectUser(userData.user.role);
+    }
+  }, []);
+
+  const redirectUser = (role) => {
+    if (role === 'admin') {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/user/services");
+    }
+  };
+
   const onFinish = async (values) => {
     try {
       const response = await axios.post('/login', values);
-
-      if (response.data.status === "success") {
-        localStorage.setItem('userData', JSON.stringify(response.data.user));
-        notification.open({
-          message: 'Welcome ' + response.data.user.name + '!',
-          icon: (
-            <SmileOutlined
-              style={{
-                color: '#108ee9',
-              }}
-            />
-          ),
+      if (response.data.status === 'success') {
+      sessionStorage.setItem('userData', JSON.stringify(response.data.data));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.token}`;
+         notification.success({
+          message: `Welcome ${response.data.data.user.name}!`, // Lỗi có thể xảy ra ở đây
         });
-        if(response.data.user.role === 'admin') {
-          navigate("/admin/services");
-        } else
-          navigate("/user/services");
+        window.location.reload();
+        redirectUser(response.data.data.user.role);
       } else {
-        navigate("/login");
-        notification.open({
-          message: 'The Email or Password is Incorrect',
-          icon: (
-            <CloseOutlined
-              style={{
-                color: '#108ee9',
-              }}
-            />
-          ),
-        });
+        throw new Error(response.data.message);
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error('Login Failed:', error);
+      notification.error({
+        message: 'Login Failed',
+        description: error.message || 'An error occurred during login',
+      });
     }
   };
+  
 
   return (
     <div className="flex h-screen bg-gray-50 justify-center items-center">

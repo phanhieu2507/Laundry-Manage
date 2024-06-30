@@ -32,8 +32,8 @@ const UserRequestList = () => {
 
   const fetchUserRequests = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const response = await axios.get(`/user/${userData.id}/request-orders`);
+      const userData = JSON.parse(sessionStorage.getItem('userData'));
+      const response = await axios.get(`/user/${userData.user.id}/request-orders`);
       const data = response.data;
       // Áp dụng bộ lọc dựa trên statusFilter
       if (statusFilter !== "all") {

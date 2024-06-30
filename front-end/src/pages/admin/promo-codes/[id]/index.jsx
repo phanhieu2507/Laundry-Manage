@@ -58,7 +58,7 @@ const PromoCodeDetail = () => {
     try {
       await axios.post(`/promo-codes/${id}/assign`, {
         userIds: selectedUsers,
-        limit: values.limit
+        quantity: values.quantity
       });
       setIsModalVisible(false);
       notification.success({ message: "Promo code assigned successfully" });

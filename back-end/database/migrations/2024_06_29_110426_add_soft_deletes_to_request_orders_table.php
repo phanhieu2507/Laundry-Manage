@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddImageToServicesTable extends Migration
+class AddSoftDeletesToRequestOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddImageToServicesTable extends Migration
      */
     public function up()
     {
-        Schema::table('services', function (Blueprint $table) {
-            $table->string('image_url')->nullable(); // Cho phép giá trị NULL nếu không có ảnh
-        });  
+        Schema::table('request_orders', function (Blueprint $table) {
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -25,8 +25,8 @@ class AddImageToServicesTable extends Migration
      */
     public function down()
     {
-        Schema::table('services', function (Blueprint $table) {
-            //
+        Schema::table('request_orders', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 }
