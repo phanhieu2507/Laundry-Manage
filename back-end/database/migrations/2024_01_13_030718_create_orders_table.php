@@ -16,7 +16,7 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->bigIncrements('order_id');
             $table->unsignedBigInteger('user_id');
-            $table->decimal('total_amount', 10, 2);
+            $table->unsignedBigInteger('total_amount');
             $table->enum('payment_status', ['paid', 'unpaid'])->default('unpaid');
             $table->date('order_date');
             $table->string('service');

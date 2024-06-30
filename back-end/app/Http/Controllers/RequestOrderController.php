@@ -8,6 +8,8 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Mail\StatusUpdated;
+use Illuminate\Support\Facades\Mail;
 
 class RequestOrderController extends Controller
 {
@@ -28,7 +30,7 @@ class RequestOrderController extends Controller
             $startOfWeek = now()->startOfWeek()->toDateTimeString();
             $endOfWeek = now()->endOfWeek()->toDateTimeString();
             $query->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
-            Log::emergency('Filtering by week', ['startOfWeek' => $startOfWeek, 'endOfWeek' => $endOfWeek]);
+        
         }
     
         // Filtering by this month
@@ -36,7 +38,7 @@ class RequestOrderController extends Controller
             $startOfMonth = now()->startOfMonth()->toDateTimeString();
             $endOfMonth = now()->endOfMonth()->toDateTimeString();
             $query->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
-            Log::emergency('Filtering by month', ['startOfMonth' => $startOfMonth, 'endOfMonth' => $endOfMonth]);
+          
         }
     
         // Additional status filter
@@ -45,8 +47,7 @@ class RequestOrderController extends Controller
             Log::emergency('Filtering by status', ['status' => $request->status]);
         }
     
-        $requestOrders = $query->get();
-        Log::emergency('Fetched request orders', ['count' => count($requestOrders)]);
+        $requestOrders = $query->with('user')->get();
     
         return response()->json($requestOrders);
     }
@@ -85,39 +86,46 @@ class RequestOrderController extends Controller
     }
 
     public function adminIndex(Request $request)
-    {
-        $status = $request->query('status', 'all');
-
-        if ($status === 'all') {
-            $requests = RequestOrder::all();
-        } else {
-            $requests = RequestOrder::where('status', $status)->get();
-        }
-
-        return response()->json($requests);
+{
+    $status = $request->query('status', 'all');
+    
+    if ($status === 'all') {
+        // Lấy tất cả các request orders cùng với thông tin user liên quan và sắp xếp từ mới nhất
+        $requests = RequestOrder::with('user')->orderBy('created_at', 'desc')->get();
+    } else {
+        // Lọc các request orders theo status cùng với thông tin user liên quan và sắp xếp từ mới nhất
+        $requests = RequestOrder::with('user')->where('status', $status)->orderBy('created_at', 'desc')->get();
     }
+    
+    return response()->json($requests);
+}
+
+    
 
     public function updateStatus($id, $status)
-    {
-        $request = RequestOrder::find($id);
-        
-        if (!$request) {
-            return response()->json(['error' => 'Request not found'], 404);
-        }
-    
-        $request->status = $status;
-        $request->save();
-    
-        // Tạo thông báo mới
-        $notification = new Notification([
-            'user_id' => $request->user_id, // Giả sử 'user_id' là khóa ngoại trong bảng 'requests'
-            'title' => "Request Update",
-            'message' => "Your request $id has been updated to $status."
-        ]);
-        $notification->save();
-    
-        return response()->json(['message' => 'Status updated successfully']);
+{
+    $requestOrder = RequestOrder::find($id);
+
+    if (!$requestOrder) {
+        return response()->json(['error' => 'Request not found'], 404);
     }
+
+    $requestOrder->status = $status;
+    $requestOrder->save();
+
+    // Tạo và lưu thông báo
+    $notification = new Notification([
+        'user_id' => $requestOrder->user_id,
+        'title' => "Request Update",
+        'message' => "Your request $id has been updated to $status."
+    ]);
+    $notification->save();
+
+    // Gửi email
+    Mail::to($requestOrder->user->email)->send(new StatusUpdated($requestOrder));
+
+    return response()->json(['message' => 'Status updated successfully']);
+}
     
 
     public function getUserRequests($id)

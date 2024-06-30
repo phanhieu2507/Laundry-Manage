@@ -4,22 +4,41 @@ import { UserOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { notification } from 'antd';
 import NotificationBell from '../notibell'; // Đảm bảo đường dẫn đúng
-
+import axios from '../api/axios';
 const { Header } = Layout;
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Xử lý logout
-    navigate('/login');
-    notification.success({
-      message: "Bạn đã Log out",
-    });
+  const handleLogout = async () => {
+    try {
+      // Gửi yêu cầu đăng xuất đến server nếu cần
+      await axios.post('/logout');
+  
+      // Xóa thông tin người dùng và token khỏi sessionStorage
+      sessionStorage.removeItem('userData');
+  
+      // Xóa tất cả dữ liệu khác trong sessionStorage nếu cần
+      sessionStorage.clear();
+  
+      // Hiển thị thông báo
+      notification.success({
+        message: "Bạn đã Log out",
+      });
+  
+      // Chuyển hướng người dùng về trang đăng nhập
+      navigate('/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      notification.error({
+        message: "Lỗi khi đăng xuất",
+        description: "Không thể đăng xuất. Vui lòng thử lại."
+      });
+    }
   };
 
   // Lấy tên người dùng từ local storage
-  const userName = JSON.parse(localStorage.getItem('userData')).name;
+  const userName = JSON.parse(sessionStorage.getItem('userData')).user.name;
 
   const menu = (
     <Menu>

@@ -7,7 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-
+use App\Notifications\VerifyEmail;
+use Illuminate\Auth\Events\Registered;
 
 class UserController extends Controller
 {
@@ -47,29 +48,35 @@ class UserController extends Controller
         return response()->json(null, 204);
     }
 
-    function login(Request $req)
-    {
-        $user = User::where('email', $req->email)->first();
-        if (!$user || !Hash::check($req->password, $user->password)) {
-            return response()->json([
-                "status" => "fail",
-                "message" => "Email or Password does not matched"
-            ]);
-        }
-        // $role=Role::where('id',$user->role_id);
+    public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
+
+    if (!Auth::attempt($credentials)) {
         return response()->json([
-            "status" => "success",
-            "message" => "Login success",
-            "user" => $user,
-            //        "role"=>$role->role_name,
-
-
-        ]);;
+            'status' => 'error',
+            'message' => 'The provided credentials do not match our records.'
+        ], 401);
     }
 
-    public function register(Request $request)
+    $user = User::where('email', $request->email)->firstOrFail();
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'user' => $user,
+            'token' => $token
+        ],
+        'message' => 'Login successful'
+    ]);
+}
+
+public function register(Request $request)
 {
-    // Validate request data
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
@@ -78,7 +85,6 @@ class UserController extends Controller
         'password' => 'required|string|min:6|confirmed',
     ]);
 
-    // Check if validation fails
     if ($validator->fails()) {
         return response()->json([
             'status' => 'fail',
@@ -87,29 +93,47 @@ class UserController extends Controller
         ], 422);
     }
 
-    // Create user if validation passes
-    try {
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->address = $request->address;
-        $user->password = Hash::make($request->password);
-        $user->save();
+    $user = new User();
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->phone = $request->phone;
+    $user->address = $request->address;
+    $user->password = Hash::make($request->password);
+    $user->save();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Registration successful',
-            'user' => $user
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Registration failed',
-            'error' => $e->getMessage()
-        ], 500);
-    }
+    // Gửi email xác thực
+    $user->notify(new VerifyEmail()); // Đảm bảo rằng bạn đã tạo Notification này
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Registration successful. Please check your email to verify.',
+        'user' => $user
+    ]);
 }
+
+public function logout(Request $request)
+{
+    // Thu hồi token của người dùng hiện tại
+    $request->user()->tokens()->delete();
+
+    // Trả về phản hồi thành công
+    return response()->json(['message' => 'Successfully logged out']);
+}
+
+public function verify(Request $request)
+{
+    $user = User::findOrFail($request->id); // Tìm người dùng dựa vào ID
+
+    if (! $request->hasValidSignature()) {
+        return response()->json(["message" => "Invalid or expired link"], 401);
+    }
+
+    $user->email_verified_at = now();
+    $user->save();
+
+    return response()->json(["message" => "Email verified successfully"]);
+}
+
 public function changePassword(Request $request)
 {
     $user = User::where('id', $request->userId)->first();; // Lấy thông tin người dùng đăng nhập hiện tại

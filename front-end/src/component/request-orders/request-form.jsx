@@ -4,7 +4,7 @@ import { Form, Input, Button, Select, notification, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const RequestForm = () => {
-  const userData = JSON.parse(localStorage.getItem('userData'));
+  const userData = JSON.parse(sessionStorage.getItem('userData'));
   const [serviceList, setServiceList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [orderId, setOrderId] = useState(null);
@@ -28,7 +28,7 @@ const RequestForm = () => {
     try {
       const completeData = {
         ...values,
-        user_id: userData.id,
+        user_id: userData.user.id,
         service: values.service.join(', '),
         status: "Pending"
       };
@@ -94,7 +94,7 @@ const RequestForm = () => {
 
       <Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" className="mr-2 bg-blue-500 hover:bg-blue-600 w-24 rounded-lg text-white">
+        <Button type="primary" htmlType="submit" className="mr-2 w-32 bg-blue-500 hover:bg-blue-600 w-24 rounded-lg text-white">
           Submit Request
         </Button>
         <Button type="default" className="mr-2 bg-yellow-500 hover:bg-yellow-600 w-24 rounded-lg text-white" onClick={handleCancel}>

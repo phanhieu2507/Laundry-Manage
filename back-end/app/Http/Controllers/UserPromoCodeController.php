@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\PromoCode;
 use App\Models\UserPromoCode;
 use App\Models\Notification;
+use App\Mail\PromoCodeGifted;
+use Illuminate\Support\Facades\Mail;
 
 class UserPromoCodeController extends Controller
 {
@@ -19,7 +21,7 @@ class UserPromoCodeController extends Controller
         }
     
         $userIds = $request->input('userIds');
-        $quantity = $request->input('quantity', 1); // Số lượng mã giảm giá cho mỗi người dùng
+        $quantity = $request->input('quantity'); // Số lượng mã giảm giá cho mỗi người dùng
 
         if (is_array($userIds) && count($userIds) > 0) {
             foreach ($userIds as $userId) {
@@ -31,7 +33,9 @@ class UserPromoCodeController extends Controller
                         'is_used' => false // Khởi tạo chưa sử dụng
                     ]);
                 }
-                
+                $user = User::find($userId); // Tìm thông tin người dùng để gửi mail
+
+                Mail::to($user->email)->send(new PromoCodeGifted($user, $quantity));
                 // Tạo thông báo cho mỗi người dùng được tặng mã
                 $notification = new Notification([
                     'user_id' => $userId,

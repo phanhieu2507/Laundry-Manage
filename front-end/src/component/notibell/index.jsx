@@ -13,8 +13,8 @@ const NotificationBell = () => {
 
   const fetchNotifications = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const { data } = await axios.get(`/notifications?id=${userData.id}`);
+      const userData = JSON.parse(sessionStorage.getItem('userData'));
+      const { data } = await axios.get(`/notifications?id=${userData.user.id}`);
       setNotifications(data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -30,8 +30,8 @@ const NotificationBell = () => {
 
   const markAllAsRead = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      await axios.get(`/notifications/mark-all-as-read?id=${userData.id}`);
+      const userData = JSON.parse(sessionStorage.getItem('userData'));
+      await axios.get(`/notifications/mark-all-as-read?id=${userData.user.id}`);
       fetchNotifications();
     } catch (error) {
       console.error('Error marking notifications as read:', error);

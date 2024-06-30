@@ -105,7 +105,7 @@ const AdminRequestList = () => {
                           ID
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          User ID
+                          Customer Name
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Service
@@ -141,7 +141,7 @@ const AdminRequestList = () => {
                               {request.request_order_id}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {request.user_id}
+                              {request.user.name}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {request.service}

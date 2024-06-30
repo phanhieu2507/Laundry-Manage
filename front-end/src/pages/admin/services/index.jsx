@@ -37,12 +37,8 @@ const AdminService = () => {
   const [form] = Form.useForm();
 
   const fetchData = async () => {
-    const token = localStorage.getItem("token");
-    const response = await axios.get("/services", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    
+    const response = await axios.get("/services");
     setServices(response.data);
   };
 

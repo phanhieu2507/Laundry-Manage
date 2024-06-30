@@ -19,6 +19,8 @@ import moment from "moment";
 import Image from "../../../../component/image";
 import AdminNavbar from "../../../../component/navbar/admin-nav";
 import AdminSidebar from "../../../../component/sidebar/admin-side";
+import UserNavbar from "../../../../component/navbar/user-nav";
+import UserSidebar from "../../../../component/sidebar/user-side";
 const { Title, Text } = Typography;
 
 const ServiceDetail = () => {
@@ -28,7 +30,7 @@ const ServiceDetail = () => {
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [activeFilter, setActiveFilter] = useState(0);
-
+  const role = JSON.parse(sessionStorage.getItem('userData')).user.role;
   useEffect(() => {
     fetchServiceDetails();
     fetchServiceReviews();
@@ -75,8 +77,17 @@ const ServiceDetail = () => {
 
   return (
     <div>
-      <AdminNavbar />
-      <AdminSidebar />
+      {role === 'admin' ? (
+        <>
+          <AdminNavbar />
+          <AdminSidebar />
+        </>
+      ) : (
+        <>
+          <UserNavbar />
+          <UserSidebar />
+        </>
+      )}
       <Row
         gutter={24}
         className="m-8 mt-24 ml-72 border border-zinc-300 rounded-2xl"

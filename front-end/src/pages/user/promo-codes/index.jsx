@@ -14,8 +14,8 @@ const UserPromoCodes = () => {
 
   const fetchUserPromoCodes = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const userId = userData.id;
+      const userData = JSON.parse(sessionStorage.getItem('userData'));
+      const userId = userData.user.id;
       const { data } = await axios.get(`/users/${userId}/promo-codes`);
       setPromoCodes(data);
     } catch (error) {
