@@ -38,8 +38,8 @@ public function getWeeklyEarnings()
     $endOfWeek = Carbon::now()->endOfWeek();
 
     $earnings = DB::table('orders')
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'))
-                ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+                ->select(DB::raw('DATE(order_date) as date'), DB::raw('SUM(total_amount) as total'))
+                ->whereBetween('order_date', [$startOfWeek, $endOfWeek])
                 ->groupBy('date')
                 ->get();
 

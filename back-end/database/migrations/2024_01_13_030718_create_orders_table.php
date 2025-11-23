@@ -16,13 +16,24 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->bigIncrements('order_id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('total_amount');
+            $table->string('status')->default('pending');
+            $table->unsignedBigInteger('total_price');  
+            $table->string('delivery_method_pickup');
+            $table->string('delivery_method_return');
+            $table->string('pickup_address');
+            $table->string('return_address');
+            $table->unsignedInteger('delivery_fee')->nullable();  
+            $table->datetime('scheduled_time')->nullable();
+            $table->datetime('completed_time')->nullable();
+
             $table->enum('payment_status', ['paid', 'unpaid'])->default('unpaid');
-            $table->date('order_date');
-            $table->string('service');
-            $table->text('detail')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+       
+            $table->text('note')->nullable();
+
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            
         });
     }
 

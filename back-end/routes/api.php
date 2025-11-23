@@ -10,7 +10,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewImageController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\ReviewResponseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,9 +26,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::middleware(['admin'])->group(function () {
-        Route::get('/admin/request-orders', [RequestOrderController::class, 'adminIndex']);
-        Route::put('/admin/request-orders/{id}/status/{status}', [RequestOrderController::class, 'updateStatus']);
+    // Route::middleware(['admin'])->group(function () {
+        Route::get('/admin/orders', [OrderController::class, 'adminIndex']);
+        Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus']);
+        Route::post('/admin/orders/{id}/confirm', [OrderController::class, 'confirmOrder']);
+
+        Route::get('/admin/reviews', [ReviewResponseController::class, 'getReviewsForAdmin']);
+        Route::post('/reviews/{review}/response', [ReviewResponseController::class, 'submitResponse']);
 
         Route::post('/promo-codes/apply', [PromoCodeController::class, 'apply']);
         Route::post('/promo-codes/{promoCodeId}/assign', [UserPromoCodeController::class, 'assignToUsers']);
@@ -40,7 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard/top-services', [DashboardController::class, 'getTopServices']);
         Route::get('/dashboard/statistics/general', [DashboardController::class, 'getGeneralPromoCodeStatistics']);
         Route::get('/dashboard/statistics/detailed', [DashboardController::class, 'getDetailedPromoCodeStatistics']);
-    });
+    // });
+    Route::apiResource('responses', ReviewResponseController::class);
     Route::apiResource('services', ServiceController::class);
 
     Route::apiResource('users', UserController::class);
@@ -49,9 +54,10 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::resource('orders', OrderController::class);
     Route::get('/user/{id}/orders', [OrderController::class, 'getUserRequests']);
-
+    Route::get('/user/{userId}/orders/{id}', [OrderController::class, 'show']);
+    Route::post('/user/orders/{id}/decision', [OrderController::class, 'desOrder']);
     Route::apiResource('request-orders', RequestOrderController::class);
-   
+    
     Route::get('/user/{id}/request-orders', [RequestOrderController::class, 'getUserRequests']);
 
     Route::get('/user', function (Request $request) { return $request->user(); });

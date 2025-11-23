@@ -19,7 +19,7 @@ class CreateServicesTable extends Migration
             $table->text('description')->nullable();
             $table->integer('duration'); // Duration in minutes, adjust data type as needed
             $table->boolean('is_available')->default(true);
-            $table->decimal('price_per_unit', 10, 2);
+            $table->integer('price_per_unit');
             $table->string('unit_type'); // Adjust data type as needed
             $table->timestamps();
         });

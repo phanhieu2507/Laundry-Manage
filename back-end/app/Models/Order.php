@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\OrderService;
 use App\Models\User;
+use App\Models\AuditLog;
+
 class Order extends Model
 {
     use HasFactory;
@@ -13,14 +16,19 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'service',
-        'detail',
         'status',
+        'total_price',
+        'delivery_method_pickup',
+        'delivery_method_return',
+        'pickup_address',
+        'return_address',
+        'delivery_fee',
+        'scheduled_time',
+        'completed_time',
         'payment_status',
-        'order_date',
-        'total_amount',
-        'promo_code', 
-        'discount_amount'
+        'note',
+        'discount_amount',
+        'promo_code_id',
     ];
 
     public function user(){
@@ -28,9 +36,15 @@ class Order extends Model
     }
 
     public function reviews()
-{
-    return $this->hasMany(Review::class);
-}
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function orderServices(){
+        return $this->hasMany(OrderService::class, 'order_id');
+    }
 
+    public function auditLogs(){
+        return $this->hasMany(AuditLog::class, 'order_id');
+    }
 
 }

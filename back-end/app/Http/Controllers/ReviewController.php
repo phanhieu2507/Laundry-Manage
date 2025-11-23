@@ -68,6 +68,7 @@ class ReviewController extends Controller
     {
         $completedReviews = Review::where('user_id', $userId)
                                   ->where('status', 'completed')
+                                  ->with('response')
                                   ->get();
 
         return response()->json($completedReviews);
@@ -77,6 +78,7 @@ class ReviewController extends Controller
     {
         $reviews = Review::where('service_id', $serviceId)
                                   ->where('status', 'completed')
+                                  ->with('response')
                                   ->with('service')
                                   ->with('images')
                                   ->with('user')

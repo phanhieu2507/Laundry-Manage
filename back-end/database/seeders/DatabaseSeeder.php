@@ -30,11 +30,11 @@ class DatabaseSeeder extends Seeder
 
         // Seed regular user
         DB::table('users')->insert([
-            'name' => 'User',
-            'email' => 'user@example.com',
+            'name' => 'Phạm Vân Anh',
+            'email' => 'fastandclean2507@example.com',
             'password' => Hash::make('password'),
             'role' => 'user',
-            'address' => 'User Address',
+            'address' => '108 Trương Định, Hai Bà Trưng, Hà Nội',
             'phone' => '987654321',
             'email_verified_at' => now(),
             'created_at' => now(),

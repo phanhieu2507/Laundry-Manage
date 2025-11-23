@@ -32,5 +32,9 @@ class Review extends Model
 {
     return $this->hasMany(ReviewImage::class, 'review_id');
 }
+public function response()
+    {
+        return $this->hasOne(ReviewResponse::class, 'review_id', 'review_id');
+    }
 
 }
