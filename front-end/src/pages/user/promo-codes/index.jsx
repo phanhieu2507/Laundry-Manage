@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Table, notification, Tag } from 'antd';
+import { AlertCircle } from 'lucide-react';
 import axios from '../../../../component/api/axios';
 import UserNavbar from "../../../../component/navbar/user-nav";
 import UserSidebar from "../../../../component/sidebar/user-side";
-import moment from 'moment'; // Để so sánh ngày
 
 const UserPromoCodes = () => {
   const [promoCodes, setPromoCodes] = useState([]);
+  const [notification, setNotification] = useState(null);
 
+  // ===== NOTIFICATION HELPER =====
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  // ===== EXISTING LOGIC: Fetch promo codes (UNCHANGED) =====
   useEffect(() => {
     fetchUserPromoCodes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUserPromoCodes = async () => {
@@ -19,52 +27,103 @@ const UserPromoCodes = () => {
       const { data } = await axios.get(`/users/${userId}/promo-codes`);
       setPromoCodes(data);
     } catch (error) {
-      notification.error({ message: 'Error fetching promo codes' });
+      showNotification('error', 'Error fetching promo codes');
     }
   };
 
+  // ===== EXISTING LOGIC: Get status tag (MODIFIED to return JSX) =====
   const getStatusTag = (promoCode) => {
-    const now = moment();
-    const validUntil = moment(promoCode.valid_until);
-    if (promoCode.times_used >= promoCode.limit) {
-      return <Tag color="red">Used Up</Tag>;
-    } else if (validUntil.isBefore(now)) {
-      return <Tag color="volcano">Expired</Tag>;
+    const now = new Date();
+    const validUntil = new Date(promoCode.valid_until);
+    
+    if (promoCode.times_used >= promoCode.usage_limit) {
+      return <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-red-100 text-red-700">Used Up</span>;
+    } else if (validUntil < now) {
+      return <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-orange-100 text-orange-700">Expired</span>;
     } else {
-      return <Tag color="green">Active</Tag>;
+      return <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-green-100 text-green-700">Active</span>;
     }
   };
-
-  const columns = [
-    { title: 'Code', dataIndex: 'code', key: 'code' },
-    { title: 'Description', dataIndex: 'description', key: 'description' },
-    { title: 'Discount Type', dataIndex: 'discount_type', key: 'discount_type' },
-    { title: 'Discount Value', dataIndex: 'discount_value', key: 'discount_value' },
-    { title: 'Valid From', dataIndex: 'valid_from', key: 'valid_from' },
-    { title: 'Valid Until', dataIndex: 'valid_until', key: 'valid_until' },
-    { title: 'Status', dataIndex: 'status', key: 'status' },
-    { title: 'Usage Limit', dataIndex: 'usage_limit', key: 'usage_limit' },
-    { title: 'Times Used', dataIndex: 'times_used', key: 'times_used' },
-    {
-      title: 'Tag',
-      key: 'tag',
-      render: (_, promoCode) => getStatusTag(promoCode)
-    },
-  ];
 
   return (
-    <div>
-      <UserNavbar />
-      <div className="flex">
-        <UserSidebar />
-        <div className="flex-grow ml-64 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Your Promo Codes</h2>
-          <Table
-            columns={columns}
-            dataSource={promoCodes}
-            pagination={{ pageSize: 10 }}
-            rowKey="id"
-          />
+    <div className="flex h-screen">
+      {/* Notification Toast */}
+      {notification && (
+        <div className="fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl flex items-start gap-3 max-w-md bg-red-50 border-2 border-red-500">
+          <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+          <div className="flex-1">
+            <h4 className="font-semibold text-red-900">{notification.message}</h4>
+          </div>
+        </div>
+      )}
+
+      <UserSidebar />
+      <div className="flex-1 flex flex-col ml-64">
+        <UserNavbar />
+        <div className="flex-1 overflow-auto p-6 bg-gray-100">
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Promo Codes</h1>
+          
+          {/* Promo Codes Table */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Code</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Discount Type</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Discount Value</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Valid From</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Valid Until</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Usage Limit</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Times Used</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tag</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {promoCodes.length > 0 ? (
+                    promoCodes.map((promoCode) => (
+                      <tr key={promoCode.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 text-gray-800 font-medium">{promoCode.code}</td>
+                        <td className="px-6 py-4 text-gray-800">{promoCode.description}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${
+                            promoCode.discount_type === 'percentage' 
+                              ? 'bg-purple-100 text-purple-700' 
+                              : 'bg-green-100 text-green-700'
+                          }`}>
+                            {promoCode.discount_type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-800 font-medium">{promoCode.discount_value}</td>
+                        <td className="px-6 py-4 text-gray-600">{promoCode.valid_from}</td>
+                        <td className="px-6 py-4 text-gray-600">{promoCode.valid_until}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${
+                            promoCode.status === 'active' 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {promoCode.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-800">{promoCode.usage_limit}</td>
+                        <td className="px-6 py-4 text-gray-800">{promoCode.times_used}</td>
+                        <td className="px-6 py-4">{getStatusTag(promoCode)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="px-6 py-8 text-center text-gray-500">
+                        No promo codes found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

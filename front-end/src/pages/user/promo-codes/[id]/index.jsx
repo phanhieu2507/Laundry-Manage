@@ -3,11 +3,9 @@ import axios from '../../../../component/api/axios';
 import UserNavbar from "../../../../component/navbar/user-nav";
 import UserSidebar from "../../../../component/sidebar/user-side";
 import PromoCodeCard from '../../../../component/promoCodeCard';
-import { Typography } from 'antd';
 
 const UserPromoCodes = () => {
   const [promoCodes, setPromoCodes] = useState([]);
-  const { Title } = Typography;
   
   useEffect(() => {
     const fetchUserPromoCodes = async () => {
@@ -24,15 +22,17 @@ const UserPromoCodes = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-5">
-      <UserNavbar />
+    <div className="flex h-screen">
       <UserSidebar />
-      <div className="px-10 py-5">
-        <Title level={2} className="text-center text-gray-800 mt-16">Your Promo Codes</Title>
-        <div className="flex flex-wrap justify-left gap-4 mt-16 ml-64">
-          {promoCodes.map(promoCode => (
-            <PromoCodeCard key={promoCode.id} promoCode={promoCode} />
-          ))}
+      <div className="flex-1 flex flex-col ml-64">
+        <UserNavbar />
+        <div className="flex-1 overflow-auto p-6 bg-gray-100">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Your Promo Codes</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {promoCodes.map(promoCode => (
+              <PromoCodeCard key={promoCode.id} promoCode={promoCode} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Image = ({ src, alt, className, onClick }) => {
-  const baseUrl = 'http://localhost:8000'; // Cập nhật baseUrl theo URL của máy chủ backend của bạn
+  const baseUrl = process.env.REACT_APP_API_URL; // Cập nhật baseUrl theo URL của máy chủ backend của bạn
   return (
     <img
       src={`${baseUrl}${src}`} 

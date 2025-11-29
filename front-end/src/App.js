@@ -3,6 +3,14 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminService from "./pages/admin/services";
 import UserService from "./pages/user/services";
+import EventsPage from "./pages/events";
+import NewsPage from "./pages/news";
+import AboutPage from "./pages/about";
+import ContactPage from "./pages/contact";
+import PricingPage from "./pages/pricing";
+import AboutUsPage from "./pages/about-us";
+import BookingPage from "./pages/booking";
+import ServicesDetailPage from "./pages/services-detail";
 import NotFound from "./pages/404/NotFound";
 import CreateRequest from "./pages/user/request-orders/create";
 import AdminRequestList from "./pages/admin/request-orders";
@@ -58,6 +66,15 @@ function App() {
         )}
         <Route path="services/:serviceId" element={<ServiceDetail />} />
         <Route path="/homepage" element={<HomePage />} />
+        <Route path="/services" element={<UserService />} />
+        <Route path="/services-detail" element={<ServicesDetailPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/about-us" element={<AboutUsPage />} />
+        <Route path="/booking" element={<BookingPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/news" element={<NewsPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </div>
   );
