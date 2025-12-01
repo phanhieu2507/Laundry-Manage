@@ -24,6 +24,7 @@ services:
     working_dir: /app
     volumes:
       - ./front-end:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
 
